@@ -43,7 +43,11 @@ make_plot4 <- function(year_range = list(2013, 2017), animal_type_choice = "All"
          y = "Count") +
     theme(plot.title = element_text(hjust = 0.5))
   
-  ggplotly(p4)
+  ggplotly(p4) %>%  
+    config(modeBarButtonsToRemove = c("lasso2d",
+                                      "pan2d",
+                                      "autoScale2d",
+                                      "zoom2d"))
 }
 
 # Plot 5
@@ -64,15 +68,19 @@ make_plot5 <-function(year_range = list(2013, 2017), intake_cond = "All"){
     p5 <- df5 %>%
         ggplot(aes(x = factor(animal_type), y = total_time_in_shelter_days)) +
         geom_boxplot(outlier.alpha = 0.5, outlier.stroke = 0.1) +
-        scale_y_continuous(breaks = c(0.5, 1, 10, 50, 100, 200, 400, 600, 1000), 
+        scale_y_continuous(trans = "log10",
+                          breaks = c(0.5, 1, 10, 50, 100, 200, 400, 600, 1000), 
                             labels = scales::label_comma(accuracy = 0.1))+
-        coord_trans(y = "log10") +
         labs(title = paste0("Days spent in shelter for ",intake_cond," Animals"),
                 y = "Days", 
                 x = "") +
         theme(plot.title = element_text(hjust = 0.5))
 
-    ggplotly(p5)
+    ggplotly(p5) %>%  
+      config(modeBarButtonsToRemove = c("zoomIn2d", 
+                                        "zoomOut2d",
+                                        "autoScale2d",
+                                        "zoom2d"))
   
 }
 yearMarks <- map(unique(df$intake_year), as.character)
@@ -96,14 +104,14 @@ plot4_radio <- dccRadioItems(
     value = 'All'
 )
 
-plot5_droplist <- tibble(label = c('All','Healthy','Injured','Sick','Feral','Pregnant','Nursing','Other'),
+plot5_droplistkey <- tibble(label = c('All','Healthy','Injured','Sick','Feral','Pregnant','Nursing','Other'),
                    value = c('All','Healthy','Injured','Sick','Feral','Pregnant','Nursing','Other'))
 
 plot5_drop <- dccDropdown(
     id = "plot5-drop",
     options=  map(
-    1:nrow(plot5_droplist), function(i){
-      list(label=plot5_droplist$label[i], value=plot5_droplist$value[i])
+    1:nrow(plot5_droplistkey), function(i){
+      list(label=plot5_droplistkey$label[i], value=plot5_droplistkey$value[i])
     }),
     value = 'All'
 )
@@ -130,10 +138,14 @@ app$layout(
       htmlLabel('Select a year range:'),
       yearSlider,
       htmlIframe(height=45, width=10, style=list(borderWidth = 0)), #space
-      htmlLabel('Select buttons:'),
-      plot4_radio,
-      htmlLabel('plot4'),
-      plot4,
+      htmlDiv(list(
+        htmlLabel('Select buttons:'),
+        plot4_radio
+      ), style = list(display = "inline", width = "250")),
+      htmlDiv(list(
+        htmlLabel('plot4'),
+        plot4
+      ), style = list(display = "inline", width = "250px")),
       htmlIframe(height=15, width=10, style=list(borderWidth = 0)), #space
       htmlLabel('Select intake conditions:'),
       plot5_drop,
