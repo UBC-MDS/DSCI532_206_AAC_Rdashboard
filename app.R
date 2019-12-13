@@ -669,7 +669,7 @@ app$layout(
             htmlDiv(style=list(height = "400px", width="15px","display"="inline-block",verticalAlign = "top")),
 
             htmlDiv(list(
-              htmlDiv(list(htmlLabel('Select Intake Conditions:'))), 
+              htmlDiv(list(htmlLabel('Select Intake Health Conditions:'))), 
               htmlDiv(list(plot5_drop))
               ), style=list(width = "45%","display"="inline-block",verticalAlign = "top", marginRight = "0px"))
           ), class = "col-4"),
