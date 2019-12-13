@@ -2,7 +2,11 @@ library(dash)
 library(dashCoreComponents)
 library(dashHtmlComponents)
 library(dashTable)
-library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(purrr)
+library(tidyr)
 library(plotly)
 library(lubridate)
 
@@ -114,4 +118,4 @@ app$callback(
         make_plot_1(year_value)
    })
 
-app$run_server()
+app$run_server(host = "0.0.0.0", port = Sys.getenv('PORT', 8050))
