@@ -9,9 +9,249 @@ library(purrr)
 library(tidyr)
 library(plotly)
 library(lubridate)
-library(cowplot)
+# library(cowplot)
+
+##################
+# code for cowplot library replacement
+theme_cowplot <- function(font_size = 14, font_family = "", line_size = .5,
+                          rel_small = 12/14, rel_tiny = 11/14, rel_large = 16/14) {
+  half_line <- font_size / 2
+  small_size <- rel_small * font_size
+
+  # work off of theme_grey just in case some new theme element comes along
+  theme_grey(base_size = font_size, base_family = font_family) %+replace%
+    theme(
+      line              = element_line(color = "black", size = line_size, linetype = 1, lineend = "butt"),
+      rect              = element_rect(fill = NA, color = NA, size = line_size, linetype = 1),
+      text              = element_text(family = font_family, face = "plain", color = "black",
+                                       size = font_size, hjust = 0.5, vjust = 0.5, angle = 0, lineheight = .9,
+                                       margin = margin(), debug = FALSE),
+
+      axis.line         = element_line(color = "black", size = line_size, lineend = "square"),
+      axis.line.x       = NULL,
+      axis.line.y       = NULL,
+      axis.text         = element_text(color = "black", size = small_size),
+      axis.text.x       = element_text(margin = margin(t = small_size / 4), vjust = 1),
+      axis.text.x.top   = element_text(margin = margin(b = small_size / 4), vjust = 0),
+      axis.text.y       = element_text(margin = margin(r = small_size / 4), hjust = 1),
+      axis.text.y.right = element_text(margin = margin(l = small_size / 4), hjust = 0),
+      axis.ticks        = element_line(color = "black", size = line_size),
+      axis.ticks.length = unit(half_line / 2, "pt"),
+      axis.title.x      = element_text(
+                            margin = margin(t = half_line / 2),
+                            vjust = 1
+                          ),
+      axis.title.x.top  = element_text(
+                            margin = margin(b = half_line / 2),
+                            vjust = 0
+                          ),
+      axis.title.y      = element_text(
+                            angle = 90,
+                            margin = margin(r = half_line / 2),
+                            vjust = 1
+                          ),
+      axis.title.y.right = element_text(
+                             angle = -90,
+                             margin = margin(l = half_line / 2),
+                             vjust = 0
+                           ),
 
 
+      legend.background = element_blank(),
+      legend.spacing    = unit(font_size, "pt"),
+      legend.spacing.x  = NULL,
+      legend.spacing.y  = NULL,
+      legend.margin     = margin(0, 0, 0, 0),
+      legend.key        = element_blank(),
+      legend.key.size   = unit(1.1 * font_size, "pt"),
+      legend.key.height = NULL,
+      legend.key.width  = NULL,
+      legend.text       = element_text(size = rel(rel_small)),
+      legend.text.align = NULL,
+      legend.title      = element_text(hjust = 0),
+      legend.title.align = NULL,
+      legend.position   = "right",
+      legend.direction  = NULL,
+      legend.justification = c("left", "center"),
+      legend.box        = NULL,
+      legend.box.margin =  margin(0, 0, 0, 0),
+      legend.box.background = element_blank(),
+      legend.box.spacing = unit(font_size, "pt"),
+
+      panel.background  = element_blank(),
+      panel.border      = element_blank(),
+      panel.grid        = element_blank(),
+      panel.grid.major  = NULL,
+      panel.grid.minor  = NULL,
+      panel.grid.major.x = NULL,
+      panel.grid.major.y = NULL,
+      panel.grid.minor.x = NULL,
+      panel.grid.minor.y = NULL,
+      panel.spacing     = unit(half_line, "pt"),
+      panel.spacing.x   = NULL,
+      panel.spacing.y   = NULL,
+      panel.ontop       = FALSE,
+
+      strip.background  = element_rect(fill = "grey80"),
+      strip.text        = element_text(
+                            size = rel(rel_small),
+                            margin = margin(half_line / 2, half_line / 2,
+                                            half_line / 2, half_line / 2)
+                          ),
+      strip.text.x      = NULL,
+      strip.text.y      = element_text(angle = -90),
+      strip.placement   = "inside",
+      strip.placement.x =  NULL,
+      strip.placement.y =  NULL,
+      strip.switch.pad.grid = unit(half_line / 2, "pt"),
+      strip.switch.pad.wrap = unit(half_line / 2, "pt"),
+
+      plot.background   = element_blank(),
+      plot.title        = element_text(
+                            face = "bold",
+                            size = rel(rel_large),
+                            hjust = 0, vjust = 1,
+                            margin = margin(b = half_line)
+                          ),
+      plot.subtitle     = element_text(
+                            size = rel(rel_small),
+                            hjust = 0, vjust = 1,
+                            margin = margin(b = half_line)
+                          ),
+      plot.caption      = element_text(
+                            size = rel(rel_tiny),
+                            hjust = 1, vjust = 1,
+                            margin = margin(t = half_line)
+                          ),
+      plot.tag           = element_text(
+                             face = "bold",
+                             hjust = 0, vjust = 0.7
+                           ),
+      plot.tag.position = c(0, 1),
+      plot.margin       = margin(half_line, half_line, half_line, half_line),
+
+      complete = TRUE
+    )
+}
+
+# To use theme_half_open which is essentially theme_cowplot
+theme_half_open <- theme_cowplot
+
+# theme_minimal_grid is basis for theme_minimal_hgrid
+theme_minimal_grid <- function(font_size = 14, font_family = "", line_size = .5,
+                               rel_small = 12/14, rel_tiny = 11/14, rel_large = 16/14,
+                               color = "grey85", colour) {
+  if (!missing(colour)) {
+    color <- colour
+  }
+
+  # Starts with theme_cowplot and then modifies some parts
+  theme_cowplot(font_size = font_size, font_family = font_family, line_size = line_size,
+                rel_small = rel_small, rel_tiny = rel_tiny, rel_large = rel_large) %+replace%
+    theme(
+      # make grid lines
+      panel.grid        = element_line(color = color,
+                                       size = line_size),
+      panel.grid.minor  = element_blank(),
+
+      # adjust axis tickmarks
+      axis.ticks        = element_line(color = color, size = line_size),
+
+      # no x or y axis lines
+      axis.line.x       = element_blank(),
+      axis.line.y       = element_blank(),
+
+      # no filled background for facted plots
+      strip.background = element_blank(),
+
+      complete = TRUE
+    )
+}
+
+# To use theme_minimal_hgrid
+theme_minimal_hgrid <- function(font_size = 14, font_family = "", line_size = .5,
+                                rel_small = 12/14, rel_tiny = 11/14, rel_large = 16/14,
+                                color = "grey85", colour) {
+  if (!missing(colour)) {
+    color <- colour
+  }
+
+  # Starts with theme_grid and then modifies some parts
+  theme_minimal_grid(font_size = font_size, font_family = font_family, line_size = line_size,
+                     rel_small = rel_small, rel_tiny = rel_tiny, rel_large = rel_large,
+                     color = color) %+replace%
+    theme (
+      # no vertical grid lines
+      panel.grid.major.x = element_blank(),
+
+      # add a x axis line
+      axis.line.x       = element_line(color = color, size = line_size),
+
+      complete = TRUE
+    )
+}
+
+# To use background_grid
+background_grid <- function(major = c("xy", "x", "y", "only_minor", "none"),
+                            minor = c("none", "xy", "x", "y"),
+                            size.major = 0.5, size.minor = 0.2,
+                            color.major = "grey85", color.minor = "grey85",
+                            colour.major, colour.minor){
+  if (!missing(colour.major)) {
+    color.major <- colour.major
+  }
+
+  if (!missing(colour.minor)) {
+    color.minor <- colour.minor
+  }
+
+
+  # start with a defined theme that corresponds to the default settings
+  t <- theme(
+    panel.grid = element_line(
+      color = color.major,
+      size = size.major,
+      linetype = 1,
+      lineend = "butt"
+    ),
+    panel.grid.major = NULL,
+    panel.grid.major.x = NULL,
+    panel.grid.major.y = NULL,
+    panel.grid.minor = element_line(
+      color = color.minor,
+      size = size.minor,
+      linetype = 1,
+      lineend = "butt"
+    ),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
+
+  t <- switch(major[1],
+    x = t + theme(panel.grid.major.y = element_blank()),
+    y = t + theme(panel.grid.major.x = element_blank()),
+    xy = t,
+    yx = t,
+    t + theme(panel.grid.major = element_blank())
+  )
+
+  t <- switch(minor[1],
+    x = t + theme(panel.grid.minor.x = NULL),
+    y = t + theme(panel.grid.minor.y = NULL),
+    xy = t + theme(
+      panel.grid.minor.x = NULL,
+      panel.grid.minor.y = NULL),
+    yx = t + theme(
+      panel.grid.minor.x = NULL,
+      panel.grid.minor.y = NULL),
+    t
+  )
+
+  t
+}
+#################
+
+#### Use specific css styling sheets for various classes based on dashr gallery examples.
 app <- Dash$new(external_stylesheets = "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css")
 
 
@@ -279,7 +519,7 @@ make_plot4 <- function(year_range = list(2013, 2017), animal_type_choice = "All"
   # Plotting
   p4 <- df4 %>%
     ggplot(aes(x = age_years, y = stat(count)))+
-    geom_histogram(color = "#56B4E9", fill = "#56B4E9", binwidth = 0.5) +
+    geom_histogram(color = "dodgerblue", fill = "#56B4E9", binwidth = 0.5) +
     scale_y_continuous(expand = expand_scale(mult = c(0, 0.05))) +
     labs(title = paste0("Age Distribution of ", title_string),
          x = "Intake Age (Year)",
@@ -358,8 +598,9 @@ app$layout(
           htmlBr(),
           # Logo
           htmlImg(src='https://cdn-images.threadless.com/threadless-media/artist_shops/shops/austinanimalcenter/profile/logo-1458338907-6b959d2b197869a6fccd76be60246ba6.png?v=3&d=eyJvbmx5X21ldGEiOiBmYWxzZSwgImZvcmNlIjogZmFsc2UsICJvcHMiOiBbWyJyZXNpemUiLCBbNDUwXSwge31dXX0=',
-          style=list("objectFit"="contain", "height" = 300)
-          )
+            style=list("objectFit"="contain", "height" = 300)
+          ),
+          htmlBr()          
         ), class = "col-2"
       ),
       #htmlDiv(class = "col-1"),
