@@ -21,7 +21,6 @@ install.packages("anytime")
 install.packages("readr")
 install.packages("heatmaply")
 install.packages("lubridate")
-install.packages("cowplot")
 
 # installs magrittr, promises, R6
 remotes::install_version("httpuv", version = "1.4.5.1", repos = "http://cloud.r-project.org", upgrade="never")
@@ -45,6 +44,7 @@ install.packages("https://cloud.r-project.org/src/contrib/base64enc_0.1-3.tar.gz
 install.packages("https://cloud.r-project.org/src/contrib/codetools_0.2-16.tar.gz", type="source", repos=NULL)
 install.packages("https://cloud.r-project.org/src/contrib/globals_0.12.5.tar.gz", type="source", repos=NULL)
 install.packages("https://cloud.r-project.org/src/contrib/Archive/future/future_1.11.1.1.tar.gz", type="source", repos=NULL)
+install.packages("https://cran.r-project.org/src/contrib/cowplot_1.0.0.tar.gz", type = "source", repos = NULL)
 
 # fiery and friends
 install.packages("https://cloud.r-project.org/src/contrib/routr_0.4.0.tar.gz", type="source", repos=NULL)
