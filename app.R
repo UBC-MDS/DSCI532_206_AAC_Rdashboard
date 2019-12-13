@@ -9,6 +9,7 @@ library(purrr)
 library(tidyr)
 library(plotly)
 library(lubridate)
+library(cowplot)
 
 
 app <- Dash$new(external_stylesheets = "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css")
@@ -61,8 +62,8 @@ animalKey <- tibble(label = c("All", "Dog", "Cat", "Bird","Other"),
                    value = c("All", "Dog", "Cat", "Bird", "Other"))
 
 
-monthKey <- tibble(label = c("All", "Oct", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
-                             "Aug", "Sep", "Jan", "Nov", "Dec"),
+monthKey <- tibble(label = c("All", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                             "Aug", "Sep", "Oct", "Nov", "Dec"),
                    value = seq(0,12))
 
 monthDropdown <- dccDropdown(
@@ -86,17 +87,17 @@ animalDropdown <- dccDropdown(
 # plot 4 radio selector
 plot4_radio <- dccRadioItems(
     id = "plot4-radio",
-    options = list(list(label = "All", value = "All"),
-                    list(label = "Cats", value = "Cat"),
-                    list(label = "Dogs", value = "Dog"),
-                    list(label = "Birds", value = "Bird"),
-                    list(label = "Others", value = "Others")),
+    options = list(list(label = " All", value = "All"),
+                    list(label = " Cats", value = "Cat"),
+                    list(label = " Dogs", value = "Dog"),
+                    list(label = " Birds", value = "Bird"),
+                    list(label = " Others", value = "Other")),
     value = 'All'
 )
 
 # plot 5 drop list
 plot5_droplistkey <- tibble(label = c('All','Healthy','Injured','Sick','Feral','Pregnant','Nursing','Other'),
-                   value = c('All','Healthy','Injured','Sick','Feral','Pregnant','Nursing','Other'))
+                   value = c('All','Normal','Injured','Sick','Feral','Pregnant','Nursing','Other'))
 
 plot5_drop <- dccDropdown(
     id = "plot5-drop",
@@ -125,13 +126,18 @@ make_plot_1 <- function(years= c(2013, 2016)){
                  y = "Count") +
         expand_limits(y=0) +
         scale_x_datetime(date_labels = format('%Y %b'), date_breaks = "4 months") +
+        scale_y_continuous(expand = expand_scale(mult = c(0, 0.05))) +
+        scale_color_discrete(labels = c("Intake","Outtake"))+
+        theme_half_open()+
+        background_grid()+
+        labs(color = "Trend") +
         theme(plot.title = element_text(size = 20, face = "bold",hjust = 0.5),
              axis.text.x = element_text(size = 12, angle = 45),
              axis.title.x = element_text(size = 20),
              axis.title.y = element_text(size = 20),
              axis.text.y = element_text(size = 14),
-             panel.background = element_blank()) 
-
+             #panel.background = element_blank()) 
+        )
   ggplotly(p)
 }
 
@@ -175,14 +181,16 @@ make_graph_plot2 <- function(year = c(2014, 2015),
   
   
   p <- ggplot(data_intake_animal, aes(y=count, x=intake_weekday)) + 
-    geom_bar(position="dodge", stat="identity", fill="dodgerblue3") +
+    geom_bar(position="dodge", stat="identity", fill="#56B4E9", alpha = 0.8) +
     labs(title = title, x = "Week day") +
-    theme(plot.title = element_text(size = 10, face = "bold",hjust = 0.5),
+    scale_y_continuous(expand = expand_scale(mult = c(0, 0.05)))+
+    theme_minimal_hgrid() +
+    theme(plot.title = element_text(size = 12, face = "bold",hjust = 0.5),
           axis.text.x = element_text(size = 8, angle = 45),
           axis.title.x = element_text(size = 10),
           axis.title.y = element_text(size = 10),
-          axis.text.y = element_text(size = 8),
-          panel.background = element_blank()) 
+          axis.text.y = element_text(size = 8))
+    
   
   ggplotly(p)
   
@@ -228,14 +236,16 @@ make_graph_plot3 <- function(year = c(2014, 2015),
   
   
   p <- ggplot(data_outtake_animal, aes(y=count, x=intake_weekday)) + 
-    geom_bar(position="dodge", stat="identity", fill="dodgerblue3") +
+    geom_bar(position="dodge", stat="identity", fill="#56B4E9", alpha = 0.8) +
     labs(title = title, x = "Week day") +
-    theme(plot.title = element_text(size = 10, face = "bold",hjust = 0.5),
+    scale_y_continuous(expand = expand_scale(mult = c(0, 0.05)))+
+    theme_minimal_hgrid() +
+    theme(plot.title = element_text(size = 12, face = "bold",hjust = 0.5),
           axis.text.x = element_text(size = 8, angle = 45),
           axis.title.x = element_text(size = 10),
           axis.title.y = element_text(size = 10),
           axis.text.y = element_text(size = 8),
-          panel.background = element_blank()) 
+          panel.background = element_blank())
   
   ggplotly(p)
   
@@ -269,11 +279,17 @@ make_plot4 <- function(year_range = list(2013, 2017), animal_type_choice = "All"
   # Plotting
   p4 <- df4 %>%
     ggplot(aes(x = age_years, y = stat(count)))+
-    geom_histogram(color = "blue", fill = "blue", binwidth = 0.5) +
+    geom_histogram(color = "#56B4E9", fill = "#56B4E9", binwidth = 0.5) +
+    scale_y_continuous(expand = expand_scale(mult = c(0, 0.05))) +
     labs(title = paste0("Age Distribution of ", title_string),
          x = "Intake Age (Year)",
          y = "Count") +
-    theme(plot.title = element_text(hjust = 0.5))
+    theme_half_open()+
+    background_grid() +
+    theme(plot.title = element_text(size = 12, face = "bold",hjust = 0.5),
+          axis.text.y = element_text(size = 8),
+          panel.background = element_blank())
+    
   
   ggplotly(p4) %>%  
     config(modeBarButtonsToRemove = c("lasso2d",
@@ -304,14 +320,18 @@ make_plot5 <-function(year_range = list(2013, 2017), intake_cond = "All"){
     # Plotting
     p5 <- df5 %>%
         ggplot(aes(x = factor(animal_type), y = total_time_in_shelter_days)) +
-        geom_boxplot(outlier.alpha = 0.5, outlier.stroke = 0.1) +
+        geom_boxplot(outlier.alpha = 0.3, outlier.stroke = 0.1, fill ="#56B4E9" ) +
         scale_y_continuous(trans = "log10",
-                          breaks = c(0.5, 1, 10, 50, 100, 200, 400, 600, 1000), 
+                          breaks = c(0.5, 1, 10, 50, 100, 200, 400, 1000), 
                             labels = scales::label_comma(accuracy = 0.1))+
-        labs(title = paste0("Days spent in shelter for ",intake_cond," Animals"),
+        labs(title = paste0("Days Spent in Shelter for ",intake_cond," Animals"),
                 y = "Days", 
                 x = "") +
-        theme(plot.title = element_text(hjust = 0.5))
+        theme_half_open()+
+        theme_minimal_hgrid() +
+        theme(plot.title = element_text(size = 12, hjust = 0.5),
+              axis.text.y = element_text(size = 8),
+              panel.background = element_blank())
 
     ggplotly(p5) %>%  
       config(modeBarButtonsToRemove = c("zoomIn2d", 
@@ -331,33 +351,87 @@ plot5 <- dccGraph(
 
 app$layout(
   htmlDiv(
-      list(
-      # Logo
-      htmlImg(src='https://raw.githubusercontent.com/UBC-MDS/DSCI_532_L02_group206_ms1/master/img/aac_logo.jpg'), 
-      # Main app title 
-      htmlH1("Animals Sheltered at the Austin Animal Center"),
-      grey_line <- htmlDiv(list(htmlHr(className = "greyline"))), 
+    list(
+      htmlDiv(class = "col-1"),
+      htmlDiv(
+        list(
+          htmlBr(),
+          # Logo
+          htmlImg(src='https://cdn-images.threadless.com/threadless-media/artist_shops/shops/austinanimalcenter/profile/logo-1458338907-6b959d2b197869a6fccd76be60246ba6.png?v=3&d=eyJvbmx5X21ldGEiOiBmYWxzZSwgImZvcmNlIjogZmFsc2UsICJvcHMiOiBbWyJyZXNpemUiLCBbNDUwXSwge31dXX0=',
+          style=list("objectFit"="contain", "height" = 300)
+          )
+        ), class = "col-2"
+      ),
+      #htmlDiv(class = "col-1"),
+      htmlDiv(
+        list(
+          htmlDiv(
+            list(
+              # Main app title 
+              htmlBr(),
+              htmlH1("Animals Sheltered at the Austin Animal Center")
+            )
+          ),
+          htmlDiv(
+            list(
+              # Content
+              dccMarkdown("This application is targeted at shelter staff at the Austin Animal Center to obtain insights on their operations. With the app, users can explore and understand:"),
+              dccMarkdown("- the overall intake/outtake trends of shelter animals across different time periods \n - the intake/outake volumes on weekdays for different animals for specific months \n - the age distribution of animals upon intake \n - the time spent by animals in the shelter before outtake based on their intake health conditions"),
+              
+              dccMarkdown(children = "This project is proudly brought to you by Keanna Knebel, Aman Kumar Garg, and Kenneth Foo. The project repository can be found [here](https://github.com/UBC-MDS/DSCI532_206_AAC_Rdashboard)."), 
+              dccMarkdown(children = "For more information on volunteering, donations, or adoptions, please visit [Austin Animal Center](http://www.austintexas.gov/department/aac)."),
+              htmlBr()
+
+            )
+          )
+          
+        ), class = "col-7"
+      )
+  ), class = "row", style = list("backgroundColor"="#CEF0F2")),
+  htmlDiv(
+    list(
+      #grey_line <- htmlDiv(list(htmlHr(className = "greyline"))), 
       htmlIframe(height=15, width=10, style=list(borderWidth = 0)), 
-      htmlLabel("Select Animal Intake Year Range:"), 
+      htmlDiv("Select Animal Intake Year Range For All Plots:", style=list(textAlign="center")), 
+      htmlBr(),
       yearSlider,
       htmlIframe(height=45, width=10, style=list(borderWidth = 0)), #space
       graph1,
+      htmlBr(),
+      htmlDiv(list(htmlHr(className = "greyline"))),
+      htmlBr(),
       # plot 2 and 3 row
       htmlDiv(                    
         list(
           htmlDiv(list(graph_2, htmlBr()), class="col-4"),
           htmlDiv(list(htmlLabel('Select Animal Type:'), animalDropdown), class="col-2"),
-          htmlDiv(list(htmlLabel('Select month:'), monthDropdown), class="col-2"),
+          htmlDiv(list(htmlLabel('Select Month:'), monthDropdown), class="col-2"),
           htmlDiv(list(graph_3,htmlBr()),class="col-4")
         ),
         class="row"
       ),
+      htmlDiv(list(htmlHr(className = "greyline"))),
+      htmlBr(),
       # plot 4 and 5 row
       htmlDiv(
         list(
           htmlDiv(list(plot4, htmlBr()), class="col-4"),
-          htmlDiv(list(htmlLabel('Select buttons:'), plot4_radio), class="col-2"),
-          htmlDiv(list(htmlLabel('Select intake conditions:'), plot5_drop), class="col-2"),
+          htmlDiv(list(
+            htmlDiv(list(
+              htmlDiv(list(htmlLabel('Select Animals:'))), 
+              htmlDiv(list(plot4_radio),style=list(width="40%"))), 
+              style=list(width = "49%","display"="inline-block",verticalAlign = "top")),
+            
+            # vertical separator
+            htmlDiv(style=list(height = "400px", width="2px","backgroundColor"="#D3D3D3","display"="inline-block",verticalAlign = "top")),
+            # buffer space padding between vertical line and plot5 droplist
+            htmlDiv(style=list(height = "400px", width="15px","display"="inline-block",verticalAlign = "top")),
+
+            htmlDiv(list(
+              htmlDiv(list(htmlLabel('Select Intake Conditions:'))), 
+              htmlDiv(list(plot5_drop))
+              ), style=list(width = "45%","display"="inline-block",verticalAlign = "top", marginRight = "0px"))
+          ), class = "col-4"),
           htmlDiv(list(plot5, htmlBr()), class="col-4")
         ),
         class="row"
