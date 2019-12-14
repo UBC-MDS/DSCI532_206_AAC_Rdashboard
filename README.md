@@ -3,6 +3,10 @@ R GGPlotly Dashboard for Austin Animal Center Shelter App.
 
 Contributions by Keanna Knebel, Aman Kumar Garg, Kenneth Foo
 
+The deployed app can be found from here:
+
+https://dashboard.heroku.com/apps/rdash-austin-animal-shelter/deploy/github
+
 # Austin Animal Center Shelter App Description
 Our team's proposed app is targeted at shelter staff, and aims to provide users with salient insights behind Austin Animal Center. By using our app, they can make informed decisions about their operational planning and budgeting, and ensure the sustainability of the shelter.
 
