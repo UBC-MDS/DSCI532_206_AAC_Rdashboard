@@ -352,6 +352,14 @@ plot5_drop <- dccDropdown(
 
 # Plot 1
 make_plot_1 <- function(years= c(2013, 2016)){
+  
+  # Create the line plot that displays trend of intake and outtake of animals with time for the input year range  
+  # 
+  # @param years: 
+  #              input year range of the plot 
+  # 
+  # @return: 
+  #         ggplotly chart object
 
   #filter our data based on the year selections
   df1 <- df1 %>%
@@ -390,6 +398,17 @@ graph1 <- dccGraph(
 make_graph_plot2 <- function(year = c(2014, 2015), 
                        animal = "All", month=0){
   
+  # Create the bar plot for capturing average number of intake animals on the weekdays  
+  # 
+  # @param year: 
+  #             input year range of the plot 
+  # @param animal: 
+  #             animal type for the plot
+  # @param month: 
+  #             option for month filtering
+  # 
+  # @return 
+  #       ggplotly chart object
   
   # filtering conditions 
   data_intake <- df %>%
@@ -446,10 +465,23 @@ make_graph_plot3 <- function(year = c(2014, 2015),
                              animal = "All", month=0){
   
   
+  # Create the bar plot for capturing average number of outtake animals on the weekdays  
+  # 
+  # @param year: 
+  #             input year range of the plot 
+  # @param animal:
+  #             animal type for the plot
+  # @param month:
+  #             option for month filtering
+  # 
+  # @return 
+  #       ggplotly chart object
+  
+  
   # filtering conditions
   data_outtake <- df %>%
     filter(outtake_year >= year[1] & outtake_year <= year[2]) %>%
-    group_by(outtake_year,animal_type,intake_weekday,intake_month) %>%
+    group_by(outtake_year,animal_type,outcome_weekday,outtake_month) %>%
     summarise(cnt = n()) 
   
   # update plot title based on animal type
@@ -464,18 +496,18 @@ make_graph_plot3 <- function(year = c(2014, 2015),
   
   if (month != 0){
     data_outtake_animal <- data_outtake_animal %>%
-      filter(intake_month == month)
+      filter(outtake_month == month)
   }
   
   
   data_outtake_animal <- data_outtake_animal %>%
-    group_by(intake_weekday) %>%
+    group_by(outcome_weekday) %>%
     summarise(count = round(mean(cnt),0))
   
-  data_outtake_animal$intake_weekday <- factor(data_outtake_animal$intake_weekday,levels = c("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday", "Saturday"))
+  data_outtake_animal$outcome_weekday <- factor(data_outtake_animal$outcome_weekday,levels = c("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday", "Saturday"))
   
   
-  p <- ggplot(data_outtake_animal, aes(y=count, x=intake_weekday)) + 
+  p <- ggplot(data_outtake_animal, aes(y=count, x=outcome_weekday)) + 
     geom_bar(position="dodge", stat="identity", fill="#56B4E9", alpha = 0.8) +
     labs(title = title, x = "Week day") +
     scale_y_continuous(expand = expand_scale(mult = c(0, 0.05)))+
@@ -498,6 +530,16 @@ graph_3 <- dccGraph(
 
 # Plot 4
 make_plot4 <- function(year_range = list(2013, 2017), animal_type_choice = "All"){
+  
+  # Create the bar plot for showing age distribution of the intake animals   
+  # 
+  # @param year_range:
+  #             input year range of the plot 
+  # @param animal_type_choice:
+  #             animal type for the plot
+  # 
+  # @return: 
+  #       ggplotly chart object
   
   # Title strings
   title_string = ifelse(animal_type_choice %in% "All", 
@@ -545,6 +587,16 @@ plot4 <- dccGraph(
 
 # Plot 5
 make_plot5 <-function(year_range = list(2013, 2017), intake_cond = "All"){
+  
+  # Create the box plot for showing the time spent of the animals in the shelter  
+  # 
+  # @param year_range:
+  #             input year range of the plot 
+  # @param animal_type_choice:
+  #             animal type for the plot
+  # 
+  # @return: 
+  #       ggplotly chart object
 
     df5 <- df %>% 
         filter(intake_year > year_range[1] & intake_year < year_range[2])
@@ -749,5 +801,5 @@ app$callback(
     make_plot5(year_range, intake_cond)
   })
 
-app$run_server()
-#app$run_server(host = "0.0.0.0", port = Sys.getenv('PORT', 8050))
+#app$run_server()
+app$run_server(host = "0.0.0.0", port = Sys.getenv('PORT', 8050))
