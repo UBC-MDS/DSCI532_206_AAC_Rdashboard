@@ -609,6 +609,11 @@ make_plot5 <-function(year_range = list(2013, 2017), intake_cond = "All"){
         df5 <- df5 %>% filter(intake_condition %in% !!intake_condition_quo)
     }
 
+    # Title strings
+    intake_cond_title = ifelse(intake_cond %in% "Normal", 
+                                "Healthy", 
+                                intake_cond)
+
     # Plotting
     p5 <- df5 %>%
         ggplot(aes(x = factor(animal_type), y = total_time_in_shelter_days)) +
@@ -616,7 +621,7 @@ make_plot5 <-function(year_range = list(2013, 2017), intake_cond = "All"){
         scale_y_continuous(trans = "log10",
                           breaks = c(0.5, 1, 10, 50, 100, 200, 400, 1000), 
                             labels = scales::label_comma(accuracy = 0.1))+
-        labs(title = paste0("Days Spent in Shelter for ",intake_cond," Animals"),
+        labs(title = paste0("Days Spent in Shelter \n for ",intake_cond_title," Animals"),
                 y = "Days", 
                 x = "") +
         theme_half_open()+
