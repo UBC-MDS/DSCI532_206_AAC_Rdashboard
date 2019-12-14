@@ -5,7 +5,11 @@ Contributions by Keanna Knebel, Aman Kumar Garg, Kenneth Foo
 
 The deployed app can be found from here:
 
-https://dashboard.heroku.com/apps/rdash-austin-animal-shelter/deploy/github
+https://rdash-austin-animal-shelter.herokuapp.com/
+
+For more details about our proposal and reflections on our app development, please refer to the following:
+- [Proposal](https://github.com/UBC-MDS/DSCI532_206_AAC_Rdashboard/blob/master/proposal.md)
+- [Reflections](https://github.com/UBC-MDS/DSCI532_206_AAC_Rdashboard/blob/master/reflections.md)
 
 # Austin Animal Center Shelter App Description
 Our team's proposed app is targeted at shelter staff, and aims to provide users with salient insights behind Austin Animal Center. By using our app, they can make informed decisions about their operational planning and budgeting, and ensure the sustainability of the shelter.
